@@ -1,60 +1,199 @@
 import os
 import random
-
+import sqlite3
+import json
+import argparse
+from modules.brincadeiras import calc_gay,calc_lesbica,calc_nacionalidade,calc_casal,calc_gostosa,calc_pobre,get_perfil
+from modules.geral import menu,start,button_handler
+from modules.dowloads import dowload_and_send
+from modules.puxadas import puxada_ip,puxada_cep,puxada_cnpj
+from dev.main import install,cls,build_args,load_config
+from modules.admin import ban,mute,fechar,abrir
 try:
   from telegram import Update
-  from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
-  from configReplay import menu_message,help_message
-  from pyfiglet import figlet_format
-  from dotenv import load_dotenv
+  from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes,CallbackQueryHandler
+  from rich.console import Console
+  from rich.panel import Panel
+  import httpx
 except ModuleNotFoundError:
-  print("[*]dowload depentencies please wait :3")
-  os.system("pip install python-telegram-bot")
-  os.system("pip install pyfiglet")
-  os.system("pip install python-dotenv")
+  install()
 
-print(figlet_format("MACRO BOT"))
-print("by nullbyte")
-print("[*]bot iniciado com sucesso")
 
-load_dotenv()
-
-TOKEN = os.getenv("TOKEN")
+TOKEN,OWNER_ID  = load_config()
 
 COMMANDS = {}
-
 def command(name):
   def wrapper(func):
      COMMANDS[name] = func
      return func
   return wrapper
 
+
+
 @command("start")
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-   username = update.effective_user.username or "null"
-   await update.message.reply_text(f"ola {username} use o /menu para ver minhas funçãoes")
+async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+   await start(update,context)
 
 @command("menu")
-async def menu(update:Update,context:ContextTypes.DEFAULT_TYPE):
-    with open("media/icon.jpg","rb") as ft:
-     await update.message.reply_photo(
-        photo=ft,
-        caption=menu_message
-     )
+async def menu_command(update:Update,context:ContextTypes.DEFAULT_TYPE):
+   await  menu(update,context)
 
-@command("coin")
-async def coin(update: Update, context: ContextTypes.DEFAULT_TYPE):
-   res = random.choice(["cara","coroa"])
-   await update.message.reply_text(res)
+@command("gay")
+async def calc_gay_command(update:Update,context:ContextTypes.DEFAULT_TYPE):
+     return  await calc_gay(context.args[0],update,context) 
 
-@command("help")
-async def help(update:Update,context: ContextTypes.DEFAULT_TYPE):
- await update.message.reply_text(help_message)
+@command("gostosa")
+async def calc_gotosa_command(update:Update,context:ContextTypes.DEFAULT_TYPE):
+    return await calc_gostosa(context.args[0],update,context)
 
-app = ApplicationBuilder().token(TOKEN).build()
+@command("get_perfil")
+async def get_perfil_command(update:Update,context:ContextTypes.DEFAULT_TYPE):
+    return await get_perfil(context.args[0],update,context) 
 
-for cmd, func in COMMANDS.items():
-    app.add_handler(CommandHandler(cmd, func))
+@command("pobre")
+async def calc_pobre_command(update:Update,context:ContextTypes.DEFAULT_TYPE):
+    return await calc_pobre(context.args[0],update,context)
 
 
-app.run_polling()
+@command("lesbica")
+async def calc_lesbica_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await calc_lesbica(context.args[0],update,context)
+
+@command("nacionalidade")
+async def calc_nacionalidade_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await calc_nacionalidade(context.args[0],update,context)
+
+@command("casal")
+async def calc_casal_command(update:Update,context:ContextTypes.DEFAULT_TYPE):
+    await calc_casal(context.args[0],context.args[1],update,context)
+
+@command("tiktok")
+async def dowload_and_send_command(update:Update,context:ContextTypes.DEFAULT_TYPE):
+    await dowload_and_send(context.args[0],update,context)
+
+@command("instagram")
+async def instagram(update:Update,context:ContextTypes.DEFAULT_TYPE):
+    await dowload_and_send(context.args[0],update,context)
+
+@command("ip")
+async def puxada_ip_command(update:Update,context:ContextTypes.DEFAULT_TYPE):
+    await puxada_ip(context.args[0],update,context)
+
+@command("cep")
+async def puxada_cep_command(update:Update,context:ContextTypes.DEFAULT_TYPE):
+    await puxada_cep(context.args[0],update,context)
+
+@command("cnpj")
+async def puxada_cnpj_command(update:Update,context:ContextTypes.DEFAULT_TYPE):
+    await puxada_cnpj(context.args[0],update,context)
+
+@command("ban")
+async def ban_command(update:Update,context:ContextTypes.DEFAULT_TYPE):
+    ban(update,context,context.args[0])
+
+@command("mute")
+async def mute_command(update:Update,context:ContextTypes.DEFAULT_TYPE):
+    mute(update,context,context.args[0])
+
+@command("fechar") 
+async def fechar_command(update:Update,context:ContextTypes.DEFAULT_TYPE):
+    fechar(update,context)
+
+@command("abrir")
+async def fechar_command(update:Update,context:ContextTypes.DEFAULT_TYPE):
+        abrir(update,context)
+
+
+
+if __name__ == "__main__": 
+     app = ApplicationBuilder().token(TOKEN).build()
+     app.add_handler(CallbackQueryHandler(button_handler))
+     args = build_args()
+     if args.install:
+        install()
+
+     for cmd, func in COMMANDS.items():       
+         app.add_handler(CommandHandler(cmd, func)) 
+
+     cls()
+     console = Console()
+     ascii_art = r"""
+.__          __  .__                 ___.           __
+|  |   _____/  |_|  |   ____ ___.__. \_ |__   _____/  |_
+|  | _/ __ \   __\  | _/ __ <   |  |  | __ \ /  _ \   __\
+|  |_\  ___/|  | |  |_\  ___/\___  |  | \_\ (  <_> )  |
+|____/\___   __| |____/\___    ____|  |___  /\____/|__|
+          \/               \/\/           \/
+     """
+     print(r"""
+##################%%%%%%#########################################################################%########%%
+#####################.*%%%%#####################################################################%%#######%%%
+*************########.@..##%#############################################################%######%##########%
+******************###.@@@@...%#%##############%#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#%#%%%%%%#
+*********************:.@@@@@@@@=..:----:...................#%%%%%%######****************####%%%%%%%%#%######
+**********************..@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@...+**********************************#%%%%######
+**********************#..*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=.+****########################*****%%%#######
+**********************##...#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.@@@@@..+***********************#######%%#######
+**********************-..*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-.@@@.#@@@@..************************+***%%#######
+*******************:.-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*@@@@@@@@+.****+**+******************#########
+*****************.:@@@:@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.########%######**********#########
+***************.=@@..@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.#################*******#%##***##
+*************=:@@..=@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@..=#%%%%#+...#####******#%%**####
+************.-@%..@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-:***###*****+*+*#####
+***********=.@@..@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=@@@@@@@@@@@@@@@@@@@@#.-*****##*++==*########
+***********.@@..@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@:@@@@@@@@@@@@@@@*....*******%+=*****########
+**********+.@+.@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.@@@@@@@@@@@@@..%%########++++*****%######*
+**********..@#+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#@@@-@@@@@@@@@@.+###########******+++++*+#
+****.*****..@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.-@@@@@@@@@@@@@@@@@.@@@-@@@@@@@@@@@.+##########++====+#++####
+****.::****.@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@...@@@@@@@@@@@@@@@@@@.@@@-@@@@@@:@@@#.********++=====+########
+****.@*...-.*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+.....@@@@@@@@@@@@@@@@@.@@@.@@@@@@@.@@@..+*****+##*++***########
+****:@@@@:..@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@........@@@@@@@@@@@@@@@@@:@@.@@@@@@@.%@@#.*******##******########
+*****.+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@............@@@@@@@@@@@@@@@.@@#@@@@@@@=.@@@.=%#######****==#%**####
+******+.@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@................@@@@@@@@@@@@@@.@@@@@@@@@@#.@@@.=########**====++**+++#
+*********+..*@@@@@@@@@@@@@@@@@@@@@@................#+...#@@@@@@@@@@@@@@@@@@@@@@@.@@..##=-#####*+++**########
+**********.+@@@@@@@@@@@@@@@@@@#%@:=@@@@%...#@@@@@%..%@@....@@@@@@@@@@....@@@@@@@.@...+@...##**+*+**####*####
+**********.@@@@@@@@@@@@@@@@@@@@@@@@@*=.......%@@@@@@@@@@@@@@@@%@@@@@@=+...@@@@@%@..%@@....%@@@@*...####****#
+**********.@@@@@@@@-#@@@@@@@@@@@@@@@@@@@......=%@@@%*-@---%@#@@@@@@@@=....@@@@@@..@@#..@@@@@@@@@@@@@..#*****
+****-.=***.+@@@@@.@@@@@@@@@...@*----@*#...............=@:--@@@.@@@@@@.....@@@@@%-@@%.@@@@@@@@@@@@@@@@@..##**
+****.%*.....-@@@.@@@@@@@%@@@@@@@@@@@@@@.:.....+@@@@@@@@@@@@+..=@@@@@@....@@@@@@-@@@@@@@@@@@@@@@@@@@@@@@+.***
+****=.@@@@@@@@.......+@%........................-.............@@@@@@@...-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*.**
+*****-.*@@@@@@+...@@...@:....+@:.......@......................@@@@@@@..@@@@@@@@.@.@@@@@@@@@@@@@%.....@@@@..*
+********...@@.@....@@@@@@@@@@=..@@.....@.....................@@@@@@@@@@@@@@@@@%.@:@@@@@@@@@@@@@@@@@....=@@.+
+*********.:@@.-@..@@@@@@@@@@@@@@..@%........................@@@@@@@@@@@@@@@@@@..@@@@@@@@@@@@@@@@@@@@@..=.-..
+********-.@@@..#.@@@@@@@@@@@@@@@@+.:@@@@...................@@%@@@@@@@@@@@@@:+@@@@@@@@@@@@@@@@@@@@@@@@@%.*:.*
++******+.@@@.@...@@@@@@@.@@@@@@@@@...@...@@=..............@@.@@@@@@@@@+...+@.@@@@@@@@@@@@@@@@@@@..@@@@@@.-%*
+++++++*.@:.#@.@.:@@@@@@+@@@@@@@@@@#...@..........-.......+..@@@@@@@@@@@@@@...@@@@@@@@@@@@@@@%@@@@-..@@@@%.%#
+++++++-#@.::@=.@-@@@@@@*@@@@@@@@@@@.......................*@@@@@@@@......+**..@@@@@@@@@@@@@@.@@@@@...@@@@.%%
+++++++.@#..*@@..:@@@@@@.@@@@@@@@@@@.....................@@@@@@.@@@@@@..=*****..@@@@@@@@.%@@@-@@@@@@..@@@+.#%
+++++++.@%.::..*.*@@@@@.*@@@@@@@@@@@@.................@@@@@@@@-.@@...@%@@+...+*-..@@@@@@@=.@@.@@@@@@..@@@.*##
+++++++:.@@@@@%*:@@@@@.%@@@@@@@@@@@@@@@#..........-@@@@@@@@@@*.@@-....@@@@@@@@@...@...%@@@...@@@@@@@.-..#**##
++++++++..@@#:...==@@.@@@@@@@@@@@@@%:@@@@@@-.-@@@@@@@@@@@@@@...@....#@@@.....@@@@@.@@@#--+@@@@@@@@@@.:**#**##
++++++++.@......:@@@%=@@@@@@@@@@@@@:@@@*..:%@@@@@@@@@@@@@@.........@@@@.....@@@@@@@@#@@@@@@@@@@@@@@.+***#**##
+++++++==@......@@@@.@@@@@@@@@@@@@@@@@#+........-@@@%-............@@@#....:@@@@@@@@@@:@@@@@@@@@@@.:*****##*##
+++++++.:@@@@*+@@@@.@@@@@@@@@@@@@@@@@@....:.......@........-=+==-@@@%....@@@@@@@@@@@@@..........*+++*+**##*##
++++++-.@:@@@@@@@+*@@@@@@@@@@@@@-..@@...........-@:.............@@@@...@@@@@@@@@@@@@@@%.:.@@..=+++++*****#**#
+++++=-@@...*@@@.@@@@@@@@@@@@@@-@@@@............@@.............@@@@..@@@@@@@@@@@@@@@@@@.%:..+***++++*****#**#
+++++.@@.+@@@@.=@@@@@@@@@@@@@@-@@@@@@@........................#@@@.@@@@@@@@@@@@@@@@@@@:.********+++******#**#
++++..@@@#.:.-@@@@@@@@@@@@@@@:@@@@@@@@+......................+@@@@@@@@@@@@@@@@@@@@@@@@.+*****************#**%
++++.@@....#@@@@@@@@@@@@@@@@.@@@@@@@@@@........:............+@@@@@@@@@@@@@@@@@@@@@@@@.:******************##*#
+++++-@..@@@@@@@@@@@@@@@@@@.@@@@@@@@@@@@....=@%...........:@@@@@@@@@@@@@@@@@@@@@@@@@#.*******************##*%
++++=..@@@@@@@@@@@@@@@@@@@=@@@@@@@@@@@@@@+.@@..........@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.*********************#*#
+++*..@@@@@@@@@@@@@@@@@@@%.@@@@@@@@@@@@@@@@@......@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.=*********************#*#
+**:.@@@@@@@@@@@@@@@@@@@@..=..@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.@@@@@@@@@@@@@@@@@@..**********************#*#
+##..@@@@@@@@@@@@@@@@@@@...@@.-@@@@@@@@@@@@+@@@@@@@@@@@@@@@@@@.@@@@@@@@@@@@@@@@@@..***********************#**
+*+.*@@@@@@@@@@@@@@@@@@..+.@@@.@@@@@@@@@@@@@*@@@@@@@@@@@@@@@#.@@@@@@@@@@@@@@@@@@...+**********************%#*
+#=.@@@@@@@@@@@@@@@@@@.=**..@@=.@@@@@@@@@@@@@#:@@@@@@@@@@@@.-@@@@@@@@@@@@@@@@@@.=@.=**********************##*
+#:.@@@@@@@@@@@@@@@@..*****.+@@.#@@@@@@@@@@@@@@.@@@@@@@@@..@@@@@@@@@@@@@@@@@@#.#@@@.**********************##*
+*.:@@@@@@@@@@@@@@..********.:@@.@@@@@@@@@@@@@@@.-@@@@@%.%@@@@@@@@@@@@@@@@@@-.%@@@@..**********************#*
+
+     """)
+
+     console.print(Panel(
+       ascii_art,
+       title="[yellow] by nullbyte [/]",
+       title_align="center",
+       padding=(0, 2),
+       style="on navy_blue",   
+     ))
+
+     app.run_polling()
