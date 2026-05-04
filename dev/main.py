@@ -1,24 +1,16 @@
 import os
-import argparse
 import json
 
-config_file = "config.json"
-
 def load_config():
-    config_data = open(config_file).read() 
+    config_data = open("config.json").read() 
     data = json.loads(config_data)
-
-    token = data["token"]
-    owner_id = data["owner_id"]
-    return token,owner_id
+    if data:
+       token = data["token"]
+       owner_id = data["owner_id"]
+       return token,owner_id
+    else:
+        print("[*]Error token não definido,verifique se o arquivo de configuração foi definido corretamente")
     
-
-def build_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--install",action="store_true")
-    parser.add_argument("--token",type=str)
-    return parser.parse_args()
-
 
 def cls():
     if os.name == "nt":
@@ -28,4 +20,4 @@ def cls():
 
 def install():
     print("[*] install depentencies please wait")
-    os.system("pip install httpx python-telegram-bot python dotenv rich")
+    os.system("pip install httpx python-telegram-bot scraping34==2.0.0")
