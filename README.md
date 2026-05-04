@@ -11,7 +11,8 @@ bot de telegram feito em python, com o objetivo de fornecer ferramentas úteis e
 </div>
 
 ---
-#📥 instalação
+# 📥 instalação
+
 ## instalação no android
  1- baixe o aplivativo "termux" no site fdroid.org
  [link direto] (https://f-droid.org/packages/com.termux/)
