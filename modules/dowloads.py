@@ -42,7 +42,6 @@ async def dowload_and_send(url:str,update: Update,context:ContextTypes) -> None:
                 write_timeout=300,
                 connect_timeout=300,
                                                                                                     )
-            msg.delete()
     except Exception as e:
         await update.message.reply_text(f"❌ {e}")
         return 

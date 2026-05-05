@@ -5,7 +5,7 @@ from modules.geral import menu,start,button_handler
 from modules.dowloads import dowload_and_send
 from modules.puxadas import puxada_ip,puxada_cep,puxada_cnpj
 from modules.hentai import rule34,hentai_video
-from dev.main import install,cls,build_args,load_config
+from dev.main import install,cls,load_config
 try:
   from telegram import Update
   from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes,CallbackQueryHandler,MessageHandler,filters

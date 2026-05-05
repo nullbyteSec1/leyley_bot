@@ -111,5 +111,5 @@ async def puxada_cnpj(target_cnpj: str, update: Update, context: ContextTypes.DE
     except Exception as e:
         await update.message.reply_text(f"Erro na requisição: {str(e)}")
 
-def puxada_nick():
-    print("")
+
+    
