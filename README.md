@@ -1,14 +1,18 @@
 <div align="center">
-# leyley bot
+
+# 🤖 leyley bot
+
 [![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![telegram](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyID)(telegram)
+[![Telegram](https://img.shields.io/badge/telegram-bot-26A5E4.svg)](https://telegram.org)
 
-bot de telegram feito em python, com o objetivo de forcener ferramentas úteis e entretimento aos usuários 
+bot de telegram feito em python, com o objetivo de fornecer ferramentas úteis e entretenimento aos usuários
+
 </div>
----
 
-#📥 instalação
+---
+# 📥 instalação
+
 ## instalação no android
  1- baixe o aplivativo "termux" no site fdroid.org
  [link direto] (https://f-droid.org/packages/com.termux/)
